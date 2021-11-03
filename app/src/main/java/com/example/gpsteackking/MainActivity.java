@@ -6,6 +6,7 @@ import android.location.LocationRequest;
 import android.os.Bundle;
 import android.widget.Switch;
 import android.widget.TextView;
+import com.google.android.gms.location.FusedLocationProviderClient;
 
 public class MainActivity extends AppCompatActivity {
     public static  final  int DEFAULT_UPDATE_INTERVAL = 30;
