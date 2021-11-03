@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationRequest;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -15,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -67,26 +67,24 @@ public class MainActivity extends AppCompatActivity {
                 }
                 updateGPS();
             }
-
-            private void updateGPS(){
-                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
-               if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                   fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                       @Override
-                       public void onSuccess(Location location) {
-
-                       }
-                   });
-               }
-                else {
-                    // Permiss not grated yet
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                        requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
-                    }
-                }
-            }
-
         });
+    }
+    private void updateGPS(){
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+
+                }
+            });
+        }
+        else {
+            // Permiss not grated yet
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
+            }
+        }
     }
 
     @Override
