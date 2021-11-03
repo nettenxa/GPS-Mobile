@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Switch;
@@ -18,6 +19,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 public class MainActivity extends AppCompatActivity {
     public static  final  int DEFAULT_UPDATE_INTERVAL = 30;
     public static  final  int FAST_UPDATE_INTERVAL = 5;
+    private static final int PERMISSION_FINE_LOCATION = 99;
 
     TextView tv_lat, tv_lon, tv_altitude, tv_accuract, tv_speed, tv_sensor, tv_updates, tv_address;
     Switch sw_locationupdate, sw_gps;
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             private void updateGPS(){
-                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this)
+                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
                 if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     // User provided the permission
                     fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -75,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else {
                     // Permiss not grated yet
+                    if(Build.VERSION >= Build.VERSION_CODES.M){
+                        requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
+                    }
                 }
             }
 
