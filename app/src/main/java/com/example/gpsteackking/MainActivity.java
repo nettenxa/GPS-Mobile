@@ -1,5 +1,6 @@
 package com.example.gpsteackking;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -11,6 +12,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -62,22 +65,22 @@ public class MainActivity extends AppCompatActivity {
                     locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
                     tv_sensor.setText("Using Wower + WIFI");
                 }
+                updateGPS();
             }
 
             private void updateGPS(){
                 fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
-                if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    // User provided the permission
-                    fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
+               if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                   fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                       @Override
+                       public void onSuccess(Location location) {
 
-                        }
-                    });
-                }
+                       }
+                   });
+               }
                 else {
                     // Permiss not grated yet
-                    if(Build.VERSION >= Build.VERSION_CODES.M){
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                         requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
                     }
                 }
@@ -85,4 +88,42 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case PERMISSION_FINE_LOCATION:
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                updateGPS();
+            }
+            else {
+                Toast.makeText(this, "This app requires permission to be granted in other to work properly", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            break;
+        }
+    }
+    private void updateUIValue(Location location) {
+        tv_lat.setText(String.valueOf(location.getLatitude()));
+        tv_lon.setText(String.valueOf(location.getLongitude()));
+        tv_accuract.setText(String.valueOf(location.getAccuracy()));
+
+        if(location.hasAltitude()) {
+            tv_altitude.setText(String.valueOf(location.getAltitude()));
+        }
+        else {
+            tv_altitude.setText("Not available");
+        }
+
+        if(location.hasSpeed()) {
+            tv_speed.setText(String.valueOf(location.getSpeed()));
+        }
+        else {
+            tv_speed.setText("Not available");
+        }
+
+    }
+
+
 }
