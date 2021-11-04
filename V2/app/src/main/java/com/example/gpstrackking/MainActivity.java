@@ -9,7 +9,6 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.Service;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -89,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     private void getDeviceLocation() {
         //
-        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager)getSystemService(Service.LOCATION_SERVICE);
         isGpsLocation = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         isNetworkLocation = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         if(!isGpsLocation && !isNetworkLocation){
