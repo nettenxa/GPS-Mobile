@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
+
     private static final int PREMISSION_CODE = 101;
     TextView locationText;
     Button getLocation;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         progressDialog= new ProgressDialog(MainActivity.this);
-        progressDialog.setMessage("Fecthing location...");
+        progressDialog.setMessage("Fetching location...");
 
         locationText = findViewById(R.id.location);
         getLocation = findViewById(R.id.getlocation);
@@ -126,9 +127,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     private void getFinalLocation() {
+
         try {
             if(isGpsLocation){
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000*60*1,10,MainActivity.this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000*60,10,MainActivity.this);
                 if(locationManager!=null){
                     loc=locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     if(loc!=null){
@@ -137,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 }
             }
             else if(isNetworkLocation){
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1000*60*1,10,MainActivity.this);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1000*60,10,MainActivity.this);
                 if(locationManager!=null){
                     loc=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     if(loc!=null){
@@ -188,5 +190,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override
     public void onLocationChanged(@NonNull Location location) {
         updateUi(location);
+    }
+    @Override
+    public void onProviderDisabled(String provider) {
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
     }
 }
