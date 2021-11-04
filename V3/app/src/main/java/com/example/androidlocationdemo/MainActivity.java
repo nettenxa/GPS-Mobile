@@ -1,4 +1,4 @@
-package com.example.gpstrackking;
+package com.example.androidlocationdemo;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,7 +9,6 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.Service;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -27,25 +26,25 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
-    private static final int PREMISSION_CODE = 101;
+    private static final int PERMISSION_CODE = 101;
     TextView locationText;
     Button getLocation;
-    String[] permissions_all = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+    String[] permissions_all={Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
     LocationManager locationManager;
-    Location loc;
     boolean isGpsLocation;
-    boolean isNetworkLocation;
+    Location loc;
+    boolean isNetworklocation;
     ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        progressDialog= new ProgressDialog(MainActivity.this);
+        progressDialog=new ProgressDialog(MainActivity.this);
         progressDialog.setMessage("Fetching location...");
 
-        locationText = findViewById(R.id.location);
-        getLocation = findViewById(R.id.getlocation);
+        locationText=findViewById(R.id.location);
+        getLocation=findViewById(R.id.getlocation);
 
         getLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,60 +53,77 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 getLocation();
             }
         });
+
+        Button openmap=findViewById(R.id.openmap);
+
+        openmap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,MapActivtiy.class));
+            }
+        });
+
+        Button fetch_current_location=findViewById(R.id.fetch_current_location);
+        fetch_current_location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,MapWithPlayServiceLocationActivity.class));
+            }
+        });
     }
 
-    private void  getLocation() {
-        if (Build.VERSION.SDK_INT >= 23){
+    private void getLocation() {
+        if(Build.VERSION.SDK_INT>=23){
             if(checkPermission()){
                 getDeviceLocation();
             }
-            else {
-                reqestPermission();
+            else{
+                requestPermission();
             }
         }
-        else {
+        else{
             getDeviceLocation();
         }
     }
 
-    private void reqestPermission() {
-        ActivityCompat.requestPermissions(MainActivity.this,permissions_all,PREMISSION_CODE);
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(MainActivity.this,permissions_all,PERMISSION_CODE);
     }
 
     private boolean checkPermission() {
-        for(int i=0; i<permissions_all.length ;i++) {
-            int result = ContextCompat.checkSelfPermission(MainActivity.this,permissions_all[i]);
-            if(result == PackageManager.PERMISSION_GRANTED) {
+        for(int i=0;i<permissions_all.length;i++){
+            int result= ContextCompat.checkSelfPermission(MainActivity.this,permissions_all[i]);
+            if(result== PackageManager.PERMISSION_GRANTED){
                 continue;
             }
             else {
                 return false;
             }
         }
-        return false;
+        return true;
     }
 
     private void getDeviceLocation() {
-        //
-        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        isGpsLocation = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        isNetworkLocation = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        if(!isGpsLocation && !isNetworkLocation){
+        //now all permission part complete now let's fetch location
+        locationManager=(LocationManager)getSystemService(Service.LOCATION_SERVICE);
+        isGpsLocation=locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        isNetworklocation=locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        if(!isGpsLocation && !isNetworklocation){
             showSettingForLocation();
-            getLastLocation();
+            getLastlocation();
         }
-        else {
+        else{
             getFinalLocation();
         }
     }
 
-    private void getLastLocation() {
-        if(locationManager!=null){
+    private void getLastlocation() {
+        if(locationManager!=null) {
             try {
                 Criteria criteria = new Criteria();
                 String provider = locationManager.getBestProvider(criteria,false);
-                Location location = locationManager.getLastKnownLocation(provider);
-            }catch (SecurityException e){
+                Location location=locationManager.getLastKnownLocation(provider);
+            } catch (SecurityException e) {
                 e.printStackTrace();
             }
         }
@@ -116,22 +132,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case PREMISSION_CODE:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        switch (requestCode){
+            case PERMISSION_CODE:
+                if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
                     getFinalLocation();
                 }
-                else {
-                    Toast.makeText(this, "Premission Failed", Toast.LENGTH_SHORT).show();
+                else{
+                    Toast.makeText(this, "Permission Failed", Toast.LENGTH_SHORT).show();
                 }
         }
     }
 
     private void getFinalLocation() {
-
-        try {
+        //one thing i missed in permission let's complete it
+        try{
             if(isGpsLocation){
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000*60,10,MainActivity.this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000*60*1,10,MainActivity.this);
                 if(locationManager!=null){
                     loc=locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     if(loc!=null){
@@ -139,8 +155,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     }
                 }
             }
-            else if(isNetworkLocation){
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1000*60,10,MainActivity.this);
+            else if(isNetworklocation){
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1000*60*1,10,MainActivity.this);
                 if(locationManager!=null){
                     loc=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     if(loc!=null){
@@ -148,38 +164,40 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     }
                 }
             }
-            else {
-                Toast.makeText(this,"Can't get Location",Toast.LENGTH_SHORT).show();
+            else{
+                Toast.makeText(this, "Can't Get Location", Toast.LENGTH_SHORT).show();
             }
 
-        }catch (SecurityException e) {
-            Toast.makeText(this,"Can't get Location",Toast.LENGTH_SHORT).show();
+        }catch (SecurityException e){
+            Toast.makeText(this, "Can't Get Location", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     private void updateUi(Location loc) {
-        progressDialog.dismiss();
         if(loc.getLatitude()==0 && loc.getLongitude()==0){
             getDeviceLocation();
         }
-        else {
+        else{
             progressDialog.dismiss();
             locationText.setText("Location : "+loc.getLatitude()+" , "+loc.getLongitude());
+
         }
+
     }
 
     private void showSettingForLocation() {
-        AlertDialog.Builder al = new AlertDialog.Builder(MainActivity.this);
-        al.setTitle("Location Not Enable!");
+        AlertDialog.Builder al=new AlertDialog.Builder(MainActivity.this);
+        al.setTitle("Location Not Enabled!");
         al.setMessage("Enable Location ?");
-        al.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+        al.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                Intent intent=new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 startActivity(intent);
             }
         });
-        al.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+        al.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -189,18 +207,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     @Override
-    public void onLocationChanged(@NonNull Location location) {
+    public void onLocationChanged(Location location) {
         updateUi(location);
-    }
-    @Override
-    public void onProviderDisabled(String provider) {
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }
