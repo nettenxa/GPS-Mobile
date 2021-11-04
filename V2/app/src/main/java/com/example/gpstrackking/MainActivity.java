@@ -148,11 +148,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 }
             }
             else {
-                Toast.makeText(this,"Can't get Location",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Can't get Location1",Toast.LENGTH_SHORT).show();
             }
 
         }catch (SecurityException e) {
-            Toast.makeText(this,"Can't get Location",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Can't get Location2",Toast.LENGTH_SHORT).show();
         }
     }
 
