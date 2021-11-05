@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">TestDatabase</string>
+
+    <array name="courses">
+        <item>English</item>
+        <item>Urdu</item>
+        <item>Physics</item>
+        <item>Thai</item>
+    </array>
+
+</resources>
