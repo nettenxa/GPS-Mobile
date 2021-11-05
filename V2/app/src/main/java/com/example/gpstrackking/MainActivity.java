@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 getDeviceLocation();
             }
             else {
-                reqestPermission();
+                requestPermission();
             }
         }
         else {
@@ -69,13 +69,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
-    private void reqestPermission() {
+    private void requestPermission() {
         ActivityCompat.requestPermissions(MainActivity.this,permissions_all,PREMISSION_CODE);
     }
 
     private boolean checkPermission() {
         for(int i=0; i<permissions_all.length ;i++) {
-            int result = ContextCompat.checkSelfPermission(MainActivity.this,permissions_all[i]);
+            int result = ContextCompat.checkSelfPermission(MainActivity.this, permissions_all[i]);
             if(result == PackageManager.PERMISSION_GRANTED) {
                 continue;
             }
@@ -191,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void onLocationChanged(@NonNull Location location) {
         updateUi(location);
     }
+
     @Override
     public void onProviderDisabled(String provider) {
     }
